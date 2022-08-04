@@ -44,6 +44,8 @@ export default class BirdsEyeViewPlugin extends Plugin {
 				this.initLeaf();
 			},
 		});
+
+		this.initLeaf();
 	}
 
 	onunload() {

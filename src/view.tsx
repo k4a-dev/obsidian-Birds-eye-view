@@ -6,6 +6,8 @@ import BirdsEyePage from "./ul/birdsEyePage";
 export const BIRDS_EYE_VIEW_TYPE = "birds-eye-view";
 import { createRoot } from "react-dom/client";
 
+import { NoteType } from "./ul/note";
+
 export class BirdsEyeView extends ItemView {
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
@@ -21,9 +23,16 @@ export class BirdsEyeView extends ItemView {
 
 	async onOpen() {
 		const root = createRoot(this.containerEl.children[1]);
+		const notes: NoteType[] = [
+			{
+				title: "Note1",
+				content:
+					" Adds a plugin setting tab to the settings page.- Registers a global click event and output 'click' to the console.- Registers a global interval which logs 'setInterval' to the console.",
+			},
+		];
 		root.render(
 			<React.StrictMode>
-				<BirdsEyePage />,
+				<BirdsEyePage notes={notes} />,
 			</React.StrictMode>
 		);
 	}
