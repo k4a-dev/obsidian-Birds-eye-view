@@ -7,11 +7,15 @@ export type NoteType = {
 	sumbNailPath?: string;
 };
 
+const renderEditor = (content: string) => {
+	return content.split(/\n/).map((line, i) => <p key={i}>{line}</p>);
+};
+
 const Note: React.FC<NoteType> = (p) => {
 	return (
 		<>
 			<p>{p.title}</p>
-			<p>{p.content}</p>
+			<div>{renderEditor(p.content)}</div>
 			<img src={`${p.sumbNailPath}`} alt={p.title} />
 		</>
 	);

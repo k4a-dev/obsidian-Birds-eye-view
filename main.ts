@@ -9,6 +9,7 @@ import {
 	Setting,
 	TFile,
 } from "obsidian";
+import { NoteType } from "src/ul/note";
 import { BIRDS_EYE_VIEW_TYPE, BirdsEyeView } from "src/view";
 
 // Remember to rename these classes and interfaces!
@@ -32,9 +33,7 @@ export default class BirdsEyeViewPlugin extends Plugin {
 			(leaf) => new BirdsEyeView(leaf)
 		);
 
-		this.app.vault.on("modify", () => {
-			console.log("a");
-		});
+		this.app.vault.on("modify", this.injectView);
 
 		this.addSettingTab(new BirdsEyeViewPluginSettingTab(this.app, this));
 
@@ -69,6 +68,7 @@ export default class BirdsEyeViewPlugin extends Plugin {
 	}
 
 	onunload() {
+		this.app.vault.off("modify", this.injectView);
 		this.app.workspace.detachLeavesOfType(BIRDS_EYE_VIEW_TYPE);
 	}
 
@@ -86,19 +86,41 @@ export default class BirdsEyeViewPlugin extends Plugin {
 		) {
 			return;
 		}
-		this.app.workspace.getLeaf(true).setViewState({
-			type: BIRDS_EYE_VIEW_TYPE,
-		});
+		this.app.workspace
+			.getLeaf(true)
+			.setViewState({
+				type: BIRDS_EYE_VIEW_TYPE,
+			})
+			.then(async () => {
+				this.injectView();
+			});
+	}
+
+	private injectView = async () => {
+		console.log("inject view");
+		const views = this.app.workspace.getLeavesOfType(BIRDS_EYE_VIEW_TYPE);
 
 		const markdownFiles = this.app.vault.getMarkdownFiles();
-		console.log(markdownFiles);
-		const file = this.app.vault.getAbstractFileByPath(
-			markdownFiles[0].path
-		);
 
-		if (file instanceof TFile)
-			this.app.workspace.getLeaf(false).openFile(file);
-	}
+		let notes: NoteType[] = [];
+
+		for (const file of markdownFiles) {
+			const content = await this.readFileContent(file);
+			notes.push({
+				title: file.name,
+				content: content,
+				filePath: file.path,
+			});
+		}
+
+		views.forEach((leaf) => {
+			if (leaf.view instanceof BirdsEyeView) leaf.view.update(notes);
+		});
+	};
+
+	private readFileContent = async (file: TFile) => {
+		return await this.app.vault.read(file);
+	};
 
 	async saveSettings() {
 		await this.saveData(this.settings);
