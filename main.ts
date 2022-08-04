@@ -6,6 +6,7 @@ import {
 	Plugin,
 	PluginSettingTab,
 	Setting,
+	TFile,
 } from "obsidian";
 import { BIRDS_EYE_VIEW_TYPE, BirdsEyeView } from "src/view";
 
@@ -32,10 +33,9 @@ export default class BirdsEyeViewPlugin extends Plugin {
 
 		this.app.vault.on("modify", () => {
 			console.log("a");
-		}),
-			this.addSettingTab(
-				new BirdsEyeViewPluginSettingTab(this.app, this)
-			);
+		});
+
+		this.addSettingTab(new BirdsEyeViewPluginSettingTab(this.app, this));
 
 		this.addCommand({
 			id: "birds-eye-view-open-view",
@@ -69,6 +69,15 @@ export default class BirdsEyeViewPlugin extends Plugin {
 		this.app.workspace.getLeaf(true).setViewState({
 			type: BIRDS_EYE_VIEW_TYPE,
 		});
+
+		const markdownFiles = this.app.vault.getMarkdownFiles();
+		console.log(markdownFiles);
+		const file = this.app.vault.getAbstractFileByPath(
+			markdownFiles[0].path
+		);
+
+		if (file instanceof TFile)
+			this.app.workspace.getLeaf(false).openFile(file);
 	}
 
 	async saveSettings() {

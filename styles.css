@@ -1,4 +1,34 @@
 /* Sets all the text color to red! */
 body {
-    /* color: blue; */
+	/* color: blue; */
+}
+
+.birds-eye-view {
+	height: 100%;
+	overflow-y: scroll;
+}
+
+.birds-eye-view_control-container {
+	top: 0px;
+	position: sticky;
+}
+
+.birds-eye-view_note-grid {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	flex-wrap: wrap;
+	justify-content: center;
+	padding: 10px;
+}
+
+.birds-eye-view_note-container {
+	width: 200px;
+	height: 200px;
+	border: 1px solid var(--text-normal);
+	overflow: hidden;
+}
+
+.birds-eye-view_note-grid p {
+	margin: 0px;
 }

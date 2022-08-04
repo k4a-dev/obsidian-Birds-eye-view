@@ -28,11 +28,23 @@ export class BirdsEyeView extends ItemView {
 				title: "Note1",
 				content:
 					" Adds a plugin setting tab to the settings page.- Registers a global click event and output 'click' to the console.- Registers a global interval which logs 'setInterval' to the console.",
+				filePath: "1",
+			},
+			{
+				title: "Note1",
+				content:
+					" Adds a plugin setting tab to the settings page.- Registers a global click event and output 'click' to the console.- Registers a global interval which logs 'setInterval' to the console.",
+				filePath: "2",
 			},
 		];
+
+		const dispatchOpen = (filePath: string, split: boolean) => {
+			console.log(filePath);
+		};
+
 		root.render(
 			<React.StrictMode>
-				<BirdsEyePage notes={notes} />,
+				<BirdsEyePage notes={notes} dispatchOpen={dispatchOpen} />,
 			</React.StrictMode>
 		);
 	}
