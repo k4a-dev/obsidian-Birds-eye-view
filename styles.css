@@ -13,6 +13,7 @@ body {
 	top: 0px;
 	position: sticky;
 	z-index: 1;
+	display: flex;
 }
 
 .birds-eye-view_note-grid {
@@ -72,4 +73,8 @@ body {
 
 .birds-eye-view_note-grid p {
 	margin: 0px;
+}
+
+.birds-eye-view_control-container > button {
+	width: auto;
 }

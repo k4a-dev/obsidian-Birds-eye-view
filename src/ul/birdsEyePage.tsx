@@ -18,6 +18,8 @@ const customStyles: StylesConfig = {
 		background: "var(--background-primary)",
 	}),
 
+	container: (provided, state) => ({ ...provided, width: "100%" }),
+
 	menuList: (provided, state) => ({
 		...provided,
 		background: "var(--background-primary)",
@@ -40,26 +42,76 @@ const customStyles: StylesConfig = {
 		};
 	},
 };
+export type SortCondType = "title" | "createtime" | "updatetime";
 
-const BirdsEyePage: React.FC<{ notes: NoteType[] } & FileEventType> = (p) => {
-	const [sortFunc, setSortFunc] =
-		useState<(a: NoteType, b: NoteType) => number>();
+type SortOption = {
+	value: SortCondType;
+	label: SortCondType;
+	top: string;
+	bottom: string;
+	sortOrder: -1 | 1;
+};
 
-	const options = [
-		{ value: "title", label: "title" },
-		{ value: "createtime", label: "createtime" },
-		{ value: "updatetime", label: "updatetime" },
-	];
+const options: SortOption[] = [
+	{ value: "title", label: "title", top: "a", bottom: "z", sortOrder: 1 },
+	{
+		value: "createtime",
+		label: "createtime",
+		top: "new",
+		bottom: "old",
+		sortOrder: -1,
+	},
+	{
+		value: "updatetime",
+		label: "updatetime",
+		top: "new",
+		bottom: "old",
+		sortOrder: -1,
+	},
+];
 
-	const onSortChange = (newValue: { value: string; label: string }) => {
+const asortFunc = (
+	a: NoteType,
+	b: NoteType,
+	cond: SortCondType,
+	sortOrder: -1 | 1
+) => {
+	if (!(cond in a) || !(cond in b)) return 0;
+	return a[cond] < b[cond] ? sortOrder : -1 * sortOrder;
+};
+
+const BirdsEyePage: React.FC<
+	{ notes: NoteType[]; defaultSortCond: SortCondType } & FileEventType
+> = (p) => {
+	const [sortValue, setSortValue] = useState<SortOption>(() => {
+		const f = options.find((o) => o.value == p.defaultSortCond);
+		return f ? f : options[0];
+	});
+
+	const [sortOrder, setSortOrder] = useState<-1 | 1>(-1);
+
+	const [sortFunc, setSortFunc] = useState<
+		(a: NoteType, b: NoteType, sortOrder: -1 | 1) => number
+	>(() => (a: NoteType, b: NoteType, sortOrder: -1 | 1) => {
+		return asortFunc(
+			a,
+			b,
+			sortValue.value,
+			sortOrder * sortValue.sortOrder == 1 ? 1 : -1
+		);
+	});
+
+	const onSortChange = (newValue: SortOption) => {
 		if (!newValue.value) return;
-
-		setSortFunc(() => (a: NoteType, b: NoteType) => {
-			const cond = newValue.value;
-			if (!(cond in a) || !(cond in b)) return 0;
-			// @ts-ignore
-			return a[cond] < b[cond] ? -1 : 1;
+		setSortFunc(() => (a: NoteType, b: NoteType, sortOrder: -1 | 1) => {
+			return asortFunc(
+				a,
+				b,
+				newValue.value,
+				sortOrder * newValue.sortOrder == 1 ? 1 : -1
+			);
 		});
+		setSortValue(newValue);
 	};
 
 	return (
@@ -68,14 +120,29 @@ const BirdsEyePage: React.FC<{ notes: NoteType[] } & FileEventType> = (p) => {
 				<Select
 					styles={customStyles}
 					options={options}
+					value={sortValue}
+					defaultValue={{
+						label: p.defaultSortCond,
+						value: p.defaultSortCond,
+					}}
 					placeholder="Sort by"
 					onChange={onSortChange}
 				></Select>
-				<p>number of notes : {p.notes.length}</p>
+				<button
+					value={sortOrder}
+					onClick={(e) => {
+						setSortOrder(sortOrder == 1 ? -1 : 1);
+					}}
+				>
+					{sortValue?.top}
+					{sortOrder == -1 ? ` -> ` : " <- "}
+					{sortValue?.bottom}
+				</button>
 			</div>
 			<div className="birds-eye-view_notes-container">
+				<p>number of notes : {p.notes.length}</p>
 				<NoteTile
-					notes={p.notes.sort(sortFunc)}
+					notes={p.notes.sort((a, b) => sortFunc(a, b, sortOrder))}
 					dispatchOpen={p.dispatchOpen}
 				/>
 			</div>

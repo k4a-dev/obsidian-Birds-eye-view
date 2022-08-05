@@ -2,7 +2,7 @@ import { ItemView, TFile, WorkspaceLeaf } from "obsidian";
 
 import React from "react";
 import ReactDOM from "react-dom";
-import BirdsEyePage from "./ul/birdsEyePage";
+import BirdsEyePage, { SortCondType } from "./ul/birdsEyePage";
 export const BIRDS_EYE_VIEW_TYPE = "birds-eye-view";
 import { createRoot, Root } from "react-dom/client";
 
@@ -11,6 +11,7 @@ import { NoteType } from "./ul/note";
 export class BirdsEyeView extends ItemView {
 	private notes: NoteType[];
 	private root: Root;
+	private defaultSortCond: SortCondType;
 
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
@@ -21,7 +22,7 @@ export class BirdsEyeView extends ItemView {
 	}
 
 	getDisplayText() {
-		return "Example view?";
+		return "Bird's eye view";
 	}
 
 	async onOpen() {
@@ -45,7 +46,11 @@ export class BirdsEyeView extends ItemView {
 
 		this.root.render(
 			<React.StrictMode>
-				<BirdsEyePage notes={this.notes} dispatchOpen={dispatchOpen} />
+				<BirdsEyePage
+					notes={this.notes}
+					dispatchOpen={dispatchOpen}
+					defaultSortCond={this.defaultSortCond}
+				/>
 			</React.StrictMode>
 		);
 	}
@@ -58,5 +63,9 @@ export class BirdsEyeView extends ItemView {
 		console.log("update");
 		this.notes = notes;
 		this.injectDOM();
+	}
+
+	setDefaultSortCond(defaultSortCond: SortCondType) {
+		this.defaultSortCond = defaultSortCond;
 	}
 }

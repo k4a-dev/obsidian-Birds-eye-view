@@ -9,6 +9,7 @@ import {
 	Setting,
 	TFile,
 } from "obsidian";
+import { SortCondType } from "src/ul/birdsEyePage";
 import { NoteType } from "src/ul/note";
 import { BIRDS_EYE_VIEW_TYPE, BirdsEyeView } from "src/view";
 
@@ -16,10 +17,12 @@ import { BIRDS_EYE_VIEW_TYPE, BirdsEyeView } from "src/view";
 
 interface BirdsEyeViewPluginSetting {
 	showSumbnail: boolean;
+	sortCond: SortCondType;
 }
 
 const DEFAULT_SETTINGS: BirdsEyeViewPluginSetting = {
 	showSumbnail: true,
+	sortCond: "updatetime",
 };
 
 export default class BirdsEyeViewPlugin extends Plugin {
@@ -33,7 +36,8 @@ export default class BirdsEyeViewPlugin extends Plugin {
 			(leaf) => new BirdsEyeView(leaf)
 		);
 
-		this.app.vault.on("modify", this.injectView);
+		// this.app.vault.on("modify", this.injectView);
+		this.app.metadataCache.on("resolved", this.injectView);
 
 		this.addSettingTab(new BirdsEyeViewPluginSettingTab(this.app, this));
 
@@ -68,7 +72,7 @@ export default class BirdsEyeViewPlugin extends Plugin {
 	}
 
 	onunload() {
-		this.app.vault.off("modify", this.injectView);
+		this.app.metadataCache.on("resolved", this.injectView);
 		this.app.workspace.detachLeavesOfType(BIRDS_EYE_VIEW_TYPE);
 	}
 
@@ -92,9 +96,18 @@ export default class BirdsEyeViewPlugin extends Plugin {
 				type: BIRDS_EYE_VIEW_TYPE,
 			})
 			.then(async () => {
+				this.updateView();
 				this.injectView();
 			});
 	}
+
+	private updateView = async () => {
+		const views = this.app.workspace.getLeavesOfType(BIRDS_EYE_VIEW_TYPE);
+		views.forEach((leaf) => {
+			if (leaf.view instanceof BirdsEyeView)
+				leaf.view.setDefaultSortCond(this.settings.sortCond);
+		});
+	};
 
 	private injectView = async () => {
 		console.log("inject view");
@@ -136,7 +149,9 @@ export default class BirdsEyeViewPlugin extends Plugin {
 				filePath: file.path,
 				createtime: file.stat.ctime,
 				updatetime: file.stat.mtime,
-				sumbNailPath: getImgPath(),
+				sumbNailPath: this.settings.showSumbnail
+					? getImgPath()
+					: undefined,
 			});
 		}
 
@@ -172,10 +187,29 @@ class BirdsEyeViewPluginSettingTab extends PluginSettingTab {
 			toggle
 				.setValue(this.plugin.settings.showSumbnail)
 				.onChange(async (value) => {
-					console.log("Secret: " + value);
 					this.plugin.settings.showSumbnail = value;
+					this.plugin.initLeaf();
 					await this.plugin.saveSettings();
 				})
 		);
+
+		new Setting(containerEl)
+			.setName("Default Sort by")
+			.addDropdown((dropdown) => {
+				const options: Record<SortCondType, SortCondType> = {
+					title: "title",
+					createtime: "createtime",
+					updatetime: "updatetime",
+				};
+				dropdown
+					.addOptions(options)
+					.setValue(this.plugin.settings.sortCond)
+					.onChange(async (value) => {
+						// @ts-ignore
+						this.plugin.settings.sortCond = value;
+						await this.plugin.saveSettings();
+						console.log(value);
+					});
+			});
 	}
 }
