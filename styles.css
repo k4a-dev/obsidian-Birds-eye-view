@@ -6,6 +6,8 @@ body {
 .birds-eye-view {
 	height: 100%;
 	overflow-y: scroll;
+	display: flex;
+	justify-content: center;
 }
 
 .birds-eye-view_control-container {
@@ -16,17 +18,56 @@ body {
 .birds-eye-view_note-grid {
 	display: flex;
 	flex-direction: row;
-	gap: 10px;
+	gap: 1em;
 	flex-wrap: wrap;
-	justify-content: center;
-	padding: 10px;
+
+	padding: 1em;
 }
 
 .birds-eye-view_note-container {
 	width: 200px;
 	height: 200px;
-	border: 1px solid var(--text-normal);
-	overflow: hidden;
+	/* border: 1px solid var(--text-normal); */
+	overflow-y: hidden;
+	overflow-x: hidden;
+	padding: 0.2em;
+
+	flex-grow: 1;
+
+	border-radius: 2px;
+
+	border-top: 10px solid var(--text-normal);
+
+	box-shadow: 0.1em 0.1em 0.5em rgba(128, 128, 128, 0.2);
+	transition: all ease 0.2;
+	cursor: pointer;
+
+	position: relative;
+}
+
+.birds-eye-view_note-container .birds-eye-view_note-title {
+	font-weight: bold;
+	margin-bottom: 0.5em;
+	font-size: 1.2em;
+}
+
+.birds-eye-view_note-container img {
+	position: absolute;
+	width: 100%;
+	height: auto;
+	top: 0;
+	left: 0;
+	opacity: 0.7;
+}
+
+.birds-eye-view_note {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.birds-eye-view_note-container:hover {
+	background: rgba(128, 128, 128, 0.2);
 }
 
 .birds-eye-view_note-grid p {

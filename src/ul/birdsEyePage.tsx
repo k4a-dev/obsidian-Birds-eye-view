@@ -19,6 +19,7 @@ const BirdsEyePage: React.FC<{ notes: NoteType[] } & FileEventType> = (p) => {
 						console.log(newValue);
 					}}
 				></Select>
+				<p>number of notes : {p.notes.length}</p>
 			</div>
 			<div className="birds-eye-view_notes-container">
 				<NoteTile notes={p.notes} dispatchOpen={p.dispatchOpen} />

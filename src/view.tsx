@@ -38,7 +38,7 @@ export class BirdsEyeView extends ItemView {
 
 		this.root.render(
 			<React.StrictMode>
-				<BirdsEyePage notes={this.notes} dispatchOpen={dispatchOpen} />,
+				<BirdsEyePage notes={this.notes} dispatchOpen={dispatchOpen} />
 			</React.StrictMode>
 		);
 	}

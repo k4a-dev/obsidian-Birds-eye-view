@@ -105,11 +105,33 @@ export default class BirdsEyeViewPlugin extends Plugin {
 		let notes: NoteType[] = [];
 
 		for (const file of markdownFiles) {
+			const getImgPath = () => {
+				const metadataCashe = this.app.metadataCache.getFileCache(file);
+				// console.log(file.vault.adapter.basePath + "\\" + file.path);
+				if (metadataCashe && metadataCashe.embeds) {
+					const img = this.app.metadataCache.getFirstLinkpathDest(
+						metadataCashe.embeds[0].link,
+						file.path
+					);
+					console.log("img", img);
+					if (img) {
+						const resourcePath =
+							this.app.vault.getResourcePath(img);
+						console.log(resourcePath);
+						return resourcePath;
+					}
+				}
+				return undefined;
+			};
+
+			// console.log(metadataCashe);
+
 			const content = await this.readFileContent(file);
 			notes.push({
 				title: file.name,
 				content: content,
 				filePath: file.path,
+				sumbNailPath: getImgPath(),
 			});
 		}
 
