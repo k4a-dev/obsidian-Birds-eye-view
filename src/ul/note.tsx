@@ -22,7 +22,6 @@ const renderExternalSumbNail = (title: string, content: string) => {
 		const line = lines[lineNum];
 		const match = line.match(/^!\[.*\]\((.+)\)/);
 		if (match && match[1]) {
-			console.log(match[1]);
 			return <img src={match[1]} alt={title} />;
 		}
 	}

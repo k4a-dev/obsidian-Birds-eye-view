@@ -124,11 +124,10 @@ export default class BirdsEyeViewPlugin extends Plugin {
 		const metadataCashe = this.app.metadataCache.getFileCache(file);
 
 		if (!metadataCashe || !metadataCashe.embeds) return;
-		// 外部の場合
-		if (file.path.match(/^https?:\/\//)) {
-			console.log(file);
-		}
-		console.log(metadataCashe);
+
+		const embed = metadataCashe.embeds[0];
+
+		if (embed.displayText?.length) return undefined;
 
 		// 内部の場合
 		const img = this.app.metadataCache.getFirstLinkpathDest(
