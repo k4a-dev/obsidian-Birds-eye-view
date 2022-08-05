@@ -122,8 +122,13 @@ export default class BirdsEyeViewPlugin extends Plugin {
 
 	private getImgPath = (file: TFile) => {
 		const metadataCashe = this.app.metadataCache.getFileCache(file);
+
 		if (!metadataCashe || !metadataCashe.embeds) return;
 		// 外部の場合
+		if (file.path.match(/^https?:\/\//)) {
+			console.log(file);
+		}
+		console.log(metadataCashe);
 
 		// 内部の場合
 		const img = this.app.metadataCache.getFirstLinkpathDest(

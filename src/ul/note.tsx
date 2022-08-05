@@ -11,36 +11,53 @@ export type NoteType = {
 };
 
 const renderEditor = (content: string) => {
-	return content.split(/\n/).map((line, i) => <p key={i}>{line}</p>);
+	return content
+		? content.split(/\n/).map((line, i) => <p key={i}>{line}</p>)
+		: "Loading...";
 };
 
-const buildPath = (path: string): string => {
-	return path;
+const renderExternalSumbNail = (title: string, content: string) => {
+	const lines = content.split("\n");
+	for (let lineNum = 0; lineNum < Math.min(100, lines.length); lineNum++) {
+		const line = lines[lineNum];
+		const match = line.match(/^!\[.*\]\((.+)\)/);
+		if (match && match[1]) {
+			console.log(match[1]);
+			return <img src={match[1]} alt={title} />;
+		}
+	}
+
+	return <></>;
 };
 
-const renderSumbNail = (sumbNailPath: string | undefined, title: string) => {
-	if (sumbNailPath == null) return <></>;
-	return <img src={buildPath(sumbNailPath)} alt={title} />;
+const renderSumbNail = (
+	sumbNailPath: string | undefined,
+	title: string,
+	content: string
+) => {
+	if (sumbNailPath == null) return renderExternalSumbNail(title, content);
+	return <img src={sumbNailPath} alt={title} />;
 };
 
 import { useInView } from "react-intersection-observer";
 
 const NoteContent: React.FC<NoteType> = (p) => {
-	const [content, setContent] = useState("Loading...");
+	const [content, setContent] = useState("");
 
 	useEffect(() => {
 		p.getContent().then((content) => setContent(content));
-	});
+	}, []);
 
 	return (
 		<>
-			<>
-				{renderSumbNail(p.sumbNailPath, p.title)}
-				<div className="birds-eye-view_note">
-					<p className="birds-eye-view_note-title">{p.title}</p>
-					<div>{renderEditor(content)}</div>
-				</div>
-			</>
+			{content !== ""
+				? renderSumbNail(p.sumbNailPath, p.title, content)
+				: null}
+			<div className="birds-eye-view_note-band"></div>
+			<div className="birds-eye-view_note">
+				<p className="birds-eye-view_note-title">{p.title}</p>
+				<div>{renderEditor(content)}</div>
+			</div>
 		</>
 	);
 };
@@ -53,11 +70,7 @@ const Note: React.FC<NoteType> = (p) => {
 	return (
 		<>
 			<div ref={ref}></div>
-			{inView && (
-				<>
-					<NoteContent {...p} />
-				</>
-			)}
+			{inView && <NoteContent {...p} />}
 		</>
 	);
 };
