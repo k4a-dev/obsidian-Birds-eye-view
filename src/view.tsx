@@ -30,42 +30,41 @@ export class BirdsEyeView extends ItemView {
 	}
 
 	private injectDOM() {
-		console.log("injectDom");
-		const dispatchOpen = (filePath: string, split: boolean) => {
-			console.log("dispatch", filePath);
-			const file = this.app.vault.getAbstractFileByPath(filePath);
-			if (file instanceof TFile) {
-				this.app.workspace
-					.getLeaf(split)
-					.openFile(file)
-					.then(() => {
-						console.log("finish", filePath);
-					});
-			}
-		};
+		console.log("injectDom", this.defaultSortCond);
 
 		this.root.render(
 			<React.StrictMode>
 				<BirdsEyePage
 					notes={this.notes}
-					dispatchOpen={dispatchOpen}
+					dispatchOpen={this.dispatchOpen}
 					defaultSortCond={this.defaultSortCond}
 				/>
 			</React.StrictMode>
 		);
 	}
 
+	dispatchOpen = (filePath: string, split: boolean) => {
+		const file = this.app.vault.getAbstractFileByPath(filePath);
+		if (file instanceof TFile) {
+			this.app.workspace
+				.getLeaf(split)
+				.openFile(file)
+				.then(() => {});
+		}
+	};
+
 	async onClose() {
 		ReactDOM.unmountComponentAtNode(this.containerEl.children[1]);
 	}
 
 	update(notes: NoteType[]) {
-		console.log("update");
 		this.notes = notes;
 		this.injectDOM();
 	}
 
 	setDefaultSortCond(defaultSortCond: SortCondType) {
+		this.root.unmount();
+		this.root = createRoot(this.containerEl.children[1]);
 		this.defaultSortCond = defaultSortCond;
 	}
 }
