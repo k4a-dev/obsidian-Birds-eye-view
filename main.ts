@@ -111,12 +111,11 @@ export default class BirdsEyeViewPlugin extends Plugin {
 				// 外部の場合
 
 				// 内部の場合
-
 				const img = this.app.metadataCache.getFirstLinkpathDest(
 					metadataCashe.embeds[0].link,
 					file.path
 				);
-				console.log("img", img);
+
 				if (img) {
 					const resourcePath = this.app.vault.getResourcePath(img);
 					console.log(resourcePath);
@@ -126,12 +125,14 @@ export default class BirdsEyeViewPlugin extends Plugin {
 				return undefined;
 			};
 
-			// console.log(metadataCashe);
+			// const content = await this.readFileContent(file);
 
-			const content = await this.readFileContent(file);
 			notes.push({
 				title: file.name,
-				content: content,
+				content: "",
+				getContent: async () => {
+					return await this.readFileContent(file);
+				},
 				filePath: file.path,
 				createtime: file.stat.ctime,
 				updatetime: file.stat.mtime,
@@ -139,6 +140,7 @@ export default class BirdsEyeViewPlugin extends Plugin {
 			});
 		}
 
+		// console.log(notes.length);
 		views.forEach((leaf) => {
 			if (leaf.view instanceof BirdsEyeView) leaf.view.update(notes);
 		});

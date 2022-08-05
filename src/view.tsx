@@ -31,9 +31,16 @@ export class BirdsEyeView extends ItemView {
 	private injectDOM() {
 		console.log("injectDom");
 		const dispatchOpen = (filePath: string, split: boolean) => {
+			console.log("dispatch", filePath);
 			const file = this.app.vault.getAbstractFileByPath(filePath);
-			if (file instanceof TFile)
-				this.app.workspace.getLeaf(split).openFile(file);
+			if (file instanceof TFile) {
+				this.app.workspace
+					.getLeaf(split)
+					.openFile(file)
+					.then(() => {
+						console.log("finish", filePath);
+					});
+			}
 		};
 
 		this.root.render(

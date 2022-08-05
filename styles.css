@@ -1,6 +1,5 @@
 /* Sets all the text color to red! */
 body {
-	/* color: blue; */
 }
 
 .birds-eye-view {
@@ -13,6 +12,7 @@ body {
 .birds-eye-view_control-container {
 	top: 0px;
 	position: sticky;
+	z-index: 1;
 }
 
 .birds-eye-view_note-grid {
@@ -27,7 +27,7 @@ body {
 .birds-eye-view_note-container {
 	width: 200px;
 	height: 200px;
-	/* border: 1px solid var(--text-normal); */
+
 	overflow-y: hidden;
 	overflow-x: hidden;
 	padding: 0.2em;

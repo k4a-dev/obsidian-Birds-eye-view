@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export type NoteType = {
 	title: string;
 	content: string;
+	getContent: () => Promise<string>;
 	createtime: number;
 	updatetime: number;
 	filePath: string;
@@ -24,6 +25,26 @@ const renderSumbNail = (sumbNailPath: string | undefined, title: string) => {
 
 import { useInView } from "react-intersection-observer";
 
+const NoteContent: React.FC<NoteType> = (p) => {
+	const [content, setContent] = useState("Loading...");
+
+	useEffect(() => {
+		p.getContent().then((content) => setContent(content));
+	});
+
+	return (
+		<>
+			<>
+				{renderSumbNail(p.sumbNailPath, p.title)}
+				<div className="birds-eye-view_note">
+					<p className="birds-eye-view_note-title">{p.title}</p>
+					<div>{renderEditor(content)}</div>
+				</div>
+			</>
+		</>
+	);
+};
+
 const Note: React.FC<NoteType> = (p) => {
 	const { ref, inView, entry } = useInView({
 		threshold: 0,
@@ -34,11 +55,7 @@ const Note: React.FC<NoteType> = (p) => {
 			<div ref={ref}></div>
 			{inView && (
 				<>
-					{renderSumbNail(p.sumbNailPath, p.title)}
-					<div className="birds-eye-view_note">
-						<p className="birds-eye-view_note-title">{p.title}</p>
-						<div>{renderEditor(p.content)}</div>
-					</div>
+					<NoteContent {...p} />
 				</>
 			)}
 		</>

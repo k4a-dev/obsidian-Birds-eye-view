@@ -13,6 +13,7 @@ const NoteTile: React.FC<
 	}
 > = (p) => {
 	const onClick = (e: React.MouseEvent, path: string) => {
+		console.log("onclick");
 		p.dispatchOpen(path, e.ctrlKey);
 	};
 
