@@ -107,20 +107,22 @@ export default class BirdsEyeViewPlugin extends Plugin {
 		for (const file of markdownFiles) {
 			const getImgPath = () => {
 				const metadataCashe = this.app.metadataCache.getFileCache(file);
-				// console.log(file.vault.adapter.basePath + "\\" + file.path);
-				if (metadataCashe && metadataCashe.embeds) {
-					const img = this.app.metadataCache.getFirstLinkpathDest(
-						metadataCashe.embeds[0].link,
-						file.path
-					);
-					console.log("img", img);
-					if (img) {
-						const resourcePath =
-							this.app.vault.getResourcePath(img);
-						console.log(resourcePath);
-						return resourcePath;
-					}
+				if (!metadataCashe || !metadataCashe.embeds) return;
+				// 外部の場合
+
+				// 内部の場合
+
+				const img = this.app.metadataCache.getFirstLinkpathDest(
+					metadataCashe.embeds[0].link,
+					file.path
+				);
+				console.log("img", img);
+				if (img) {
+					const resourcePath = this.app.vault.getResourcePath(img);
+					console.log(resourcePath);
+					return resourcePath;
 				}
+
 				return undefined;
 			};
 
@@ -131,6 +133,8 @@ export default class BirdsEyeViewPlugin extends Plugin {
 				title: file.name,
 				content: content,
 				filePath: file.path,
+				createtime: file.stat.ctime,
+				updatetime: file.stat.mtime,
 				sumbNailPath: getImgPath(),
 			});
 		}
