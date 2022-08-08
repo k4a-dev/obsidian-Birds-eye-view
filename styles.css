@@ -34,11 +34,11 @@ body {
 
 	flex-grow: 1;
 
-	border-radius: 2px;
+	border-radius: 0.2em;
 
-	border-top: 10px solid var(--text-normal);
+	border-top: 0.5em solid var(--background-primary-alt);
 
-	box-shadow: 0.1em 0.1em 0.5em rgba(128, 128, 128, 0.2);
+	box-shadow: 0.1em 0.1em 0px rgba(128, 128, 128, 0.2);
 	transition: all ease 0.2;
 	cursor: pointer;
 
@@ -48,7 +48,6 @@ body {
 .birds-eye-view_note-container .birds-eye-view_note-title {
 	font-weight: bold;
 	margin-bottom: 0.5em;
-	font-size: 1.2em;
 }
 
 .birds-eye-view_note-container img {
@@ -60,13 +59,16 @@ body {
 
 .birds-eye-view_note {
 	position: absolute;
-
 	padding: 0.5em;
-
 	width: 100%;
 	height: 100%;
 	top: 0;
 	left: 0;
+}
+
+.birds-eye-view_note > div {
+	overflow: hidden;
+	margin-bottom: 0.5em;
 }
 
 .birds-eye-view_note-band {
