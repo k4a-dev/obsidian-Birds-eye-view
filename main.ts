@@ -11,14 +11,22 @@ import { NoteType } from "src/ul/note";
 import { BIRDS_EYE_VIEW_TYPE, BirdsEyeView } from "src/view";
 
 import { birdseyeIcon } from "src/ul/icon/icon";
+import {
+	getDailyNoteSettings,
+	IPeriodicNoteSettings,
+} from "obsidian-daily-notes-interface";
+
+import dayjs from "dayjs";
 
 interface BirdsEyeViewPluginSetting {
 	showSumbnail: boolean;
+	excludesDailyNotes: boolean;
 	sortCond: SortCondType;
 }
 
 const DEFAULT_SETTINGS: BirdsEyeViewPluginSetting = {
 	showSumbnail: true,
+	excludesDailyNotes: true,
 	sortCond: "updatetime",
 };
 
@@ -95,9 +103,14 @@ export default class BirdsEyeViewPlugin extends Plugin {
 		const views = this.app.workspace.getLeavesOfType(BIRDS_EYE_VIEW_TYPE);
 		if (views.length == 0) return;
 
+		const dailyNoteSettings = getDailyNoteSettings();
+
 		const notes: NoteType[] = this.app.vault
 			.getMarkdownFiles()
-			.map((markdownFile) => this.composeNoteInfo(markdownFile));
+			.filter((file) =>
+				this.filterFileCallback(file, dailyNoteSettings, this.settings)
+			)
+			.map((file) => this.composeNoteInfo(file));
 
 		views.forEach((leaf) => {
 			if (leaf.view instanceof BirdsEyeView) leaf.view.update(notes);
@@ -118,6 +131,16 @@ export default class BirdsEyeViewPlugin extends Plugin {
 				? this.getImgPath(file)
 				: undefined,
 		};
+	};
+
+	private filterFileCallback = (
+		file: TFile,
+		dailyNoteSettings: IPeriodicNoteSettings,
+		settings: BirdsEyeViewPluginSetting
+	): boolean => {
+		if (settings.excludesDailyNotes && isDailyNote(file, dailyNoteSettings))
+			return false;
+		return true;
 	};
 
 	private getImgPath = (file: TFile) => {
@@ -147,6 +170,37 @@ export default class BirdsEyeViewPlugin extends Plugin {
 	}
 }
 
+const isDailyNote = (
+	file: TFile,
+	dailyNoteSettings: IPeriodicNoteSettings
+): boolean => {
+	const day = dayjs(file.basename, dailyNoteSettings.format);
+
+	if (!day.isValid()) return false;
+
+	if (getParentPath(file.path) !== dailyNoteSettings.folder) return false;
+
+	return true;
+};
+
+const getParentPath = (path: string) => {
+	return removeFirstSlash(removeTrailingSlash(path))
+		.split("/")
+		.reduce((prev, cur, index, arr) => {
+			if (index === 0) return cur;
+			if (index == arr.length - 1) return prev;
+			return prev + "/" + cur;
+		}, "");
+};
+
+function removeTrailingSlash(url: string) {
+	return url.replace(/\/$/, "");
+}
+
+const removeFirstSlash = (url: string) => {
+	return url.replace(/^\//, "");
+};
+
 class BirdsEyeViewPluginSettingTab extends PluginSettingTab {
 	plugin: BirdsEyeViewPlugin;
 
@@ -169,6 +223,18 @@ class BirdsEyeViewPluginSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				})
 		);
+
+		new Setting(containerEl)
+			.setName("Excludes Daily Notes")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.excludesDailyNotes)
+					.onChange(async (value) => {
+						this.plugin.settings.excludesDailyNotes = value;
+						this.plugin.injectView();
+						await this.plugin.saveSettings();
+					})
+			);
 
 		new Setting(containerEl)
 			.setName("Default Sort by")
