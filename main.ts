@@ -100,6 +100,7 @@ export default class BirdsEyeViewPlugin extends Plugin {
 	};
 
 	injectView = async () => {
+		console.log('inject view')
 		const views = this.app.workspace.getLeavesOfType(BIRDS_EYE_VIEW_TYPE);
 		if (views.length == 0) return;
 

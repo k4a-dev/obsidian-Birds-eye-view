@@ -10,9 +10,35 @@ export type NoteType = {
 	sumbNailPath?: string;
 };
 
-const renderEditor = (content: string) => {
+import { unified } from "unified";
+
+import remark from "remark-parse";
+
+import { useInView } from "react-intersection-observer";
+import { Root } from "remark-parse/lib";
+import { Content } from "mdast";
+
+const RenderLine: React.FC<{ content: string }> = ({ content }) => {
+	let match = null;
+
+	const replaced = content.replace(/\!\[.*\]\(.*\)/g, "");
+
+	if ((match = replaced.match(/#+ (.*)/))) {
+		return <p>{match[1]}</p>;
+	}
+
+	return <p>{replaced}</p>;
+};
+
+const renderContent = (content: string) => {
+	const proceseer = unified().use(remark);
+	const root = proceseer.parse(content);
+
 	return content
-		? content.split(/\n/).map((line, i) => <p key={i}>{line}</p>)
+		? content
+				.split(/\n/)
+				.slice(0, 20)
+				.map((line, i) => <RenderLine key={i} content={line} />)
 		: "Loading...";
 };
 
@@ -38,8 +64,6 @@ const renderSumbNail = (
 	return <img src={sumbNailPath} alt={title} />;
 };
 
-import { useInView } from "react-intersection-observer";
-
 const NoteContent: React.FC<NoteType> = (p) => {
 	const [content, setContent] = useState("");
 
@@ -55,7 +79,7 @@ const NoteContent: React.FC<NoteType> = (p) => {
 			<div className="birds-eye-view_note-band"></div>
 			<div className="birds-eye-view_note">
 				<p className="birds-eye-view_note-title">{p.title}</p>
-				<div>{renderEditor(content)}</div>
+				<div>{renderContent(content)}</div>
 			</div>
 		</>
 	);

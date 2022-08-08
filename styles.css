@@ -47,12 +47,15 @@ body {
 
 .birds-eye-view_note-container .birds-eye-view_note-title {
 	font-weight: bold;
+	border-bottom: 1px solid;
 	margin-bottom: 0.5em;
 }
 
 .birds-eye-view_note-container img {
 	width: 100%;
 	height: auto;
+	max-height: 100%;
+	object-fit: contain;
 	top: 0;
 	left: 0;
 }
@@ -92,4 +95,43 @@ body {
 
 .birds-eye-view_control-container > button {
 	width: auto;
+}
+
+/* Note内ContentStyle */
+.birds-eye-view_note * {
+	line-height: 1.2em !important;
+}
+
+.birds-eye-view_note h1 {
+	font-size: 1.1em;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.birds-eye-view_note h2 {
+	font-size: 0.9em;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.birds-eye-view_note h3 {
+	font-size: 0.8em;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.birds-eye-view_note h4 {
+	font-size: 0.7em;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.birds-eye-view_note h5 {
+	font-size: 0.6em;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.birds-eye-view_note a:hover {
+	text-decoration: dashed;
 }
