@@ -16,7 +16,7 @@ import {
 	IPeriodicNoteSettings,
 } from "obsidian-daily-notes-interface";
 
-import dayjs from "dayjs";
+import { isDailyNote } from "src/utils/file";
 
 interface BirdsEyeViewPluginSetting {
 	showSumbnail: boolean;
@@ -108,7 +108,7 @@ export default class BirdsEyeViewPlugin extends Plugin {
 		const notes: NoteType[] = this.app.vault
 			.getMarkdownFiles()
 			.filter((file) =>
-				this.filterFileCallback(file, dailyNoteSettings, this.settings)
+				this.fileFilterCallback(file, dailyNoteSettings, this.settings)
 			)
 			.map((file) => this.composeNoteInfo(file));
 
@@ -133,7 +133,7 @@ export default class BirdsEyeViewPlugin extends Plugin {
 		};
 	};
 
-	private filterFileCallback = (
+	private fileFilterCallback = (
 		file: TFile,
 		dailyNoteSettings: IPeriodicNoteSettings,
 		settings: BirdsEyeViewPluginSetting
@@ -144,21 +144,27 @@ export default class BirdsEyeViewPlugin extends Plugin {
 	};
 
 	private getImgPath = (file: TFile) => {
-		const metadataCashe = this.app.metadataCache.getFileCache(file);
+		const embed = this.getFirstEmbeds(file);
+		if (!embed) return;
 
-		if (!metadataCashe || !metadataCashe.embeds) return;
-
-		const embed = metadataCashe.embeds[0];
-
-		if (embed.displayText?.length) return undefined;
-
-		// 内部の場合
 		const img = this.app.metadataCache.getFirstLinkpathDest(
-			metadataCashe.embeds[0].link,
+			embed.link,
 			file.path
 		);
 
 		return img ? this.app.vault.getResourcePath(img) : undefined;
+	};
+
+	private getFirstEmbeds = (file: TFile) => {
+		const metadataCashe = this.app.metadataCache.getFileCache(file);
+		if (!metadataCashe || !metadataCashe.embeds) return;
+
+		const embed = metadataCashe.embeds[0];
+
+		// displayTextが含まれている場合はMarkdownファイルなので除外
+		if (embed.displayText?.length) return;
+
+		return embed;
 	};
 
 	private readFileContent = async (file: TFile) => {
@@ -169,37 +175,6 @@ export default class BirdsEyeViewPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 }
-
-const isDailyNote = (
-	file: TFile,
-	dailyNoteSettings: IPeriodicNoteSettings
-): boolean => {
-	const day = dayjs(file.basename, dailyNoteSettings.format);
-
-	if (!day.isValid()) return false;
-
-	if (getParentPath(file.path) !== dailyNoteSettings.folder) return false;
-
-	return true;
-};
-
-const getParentPath = (path: string) => {
-	return removeFirstSlash(removeTrailingSlash(path))
-		.split("/")
-		.reduce((prev, cur, index, arr) => {
-			if (index === 0) return cur;
-			if (index == arr.length - 1) return prev;
-			return prev + "/" + cur;
-		}, "");
-};
-
-function removeTrailingSlash(url: string) {
-	return url.replace(/\/$/, "");
-}
-
-const removeFirstSlash = (url: string) => {
-	return url.replace(/^\//, "");
-};
 
 class BirdsEyeViewPluginSettingTab extends PluginSettingTab {
 	plugin: BirdsEyeViewPlugin;
