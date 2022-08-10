@@ -132,7 +132,7 @@ export default class BirdsEyeViewPlugin extends Plugin {
 
 	private composeNoteInfo = (file: TFile): NoteType => {
 		return {
-			title: file.name,
+			title: file.basename,
 			content: "",
 			getContent: async () => {
 				return await this.readFileContent(file);

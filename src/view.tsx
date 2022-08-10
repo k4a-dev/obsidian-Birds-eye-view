@@ -51,7 +51,6 @@ export class BirdsEyeView extends ItemView {
 				.openFile(file)
 				.then(() => {});
 		}
-		
 	};
 
 	async onClose() {

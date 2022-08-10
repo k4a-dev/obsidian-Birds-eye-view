@@ -18,19 +18,17 @@ const NoteTile: React.FC<
 	};
 
 	return (
-		<>
-			<div className="birds-eye-view_note-grid">
-				{p.notes.map((note) => (
-					<div
-						key={note.filePath}
-						className="birds-eye-view_note-container"
-						onClick={(e) => onClick(e, note.filePath)}
-					>
-						<Note {...note}></Note>
-					</div>
-				))}
-			</div>
-		</>
+		<div className="birds-eye-view_note-grid">
+			{p.notes.map((note) => (
+				<div
+					key={note.filePath}
+					className="birds-eye-view_note-container"
+					onClick={(e) => onClick(e, note.filePath)}
+				>
+					<Note {...note}></Note>
+				</div>
+			))}
+		</div>
 	);
 };
 

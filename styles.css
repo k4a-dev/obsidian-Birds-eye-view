@@ -1,12 +1,13 @@
 /* Sets all the text color to red! */
-body {
+
+div[data-type="birds-eye-view"] .view-content {
+	background-color: var(--background-primary) !important;
 }
 
 .birds-eye-view {
-	height: 100%;
-	overflow-y: scroll;
 	display: flex;
-	justify-content: center;
+	flex-direction: column;
+	gap: 10px;
 }
 
 .birds-eye-view_control-container {
@@ -14,6 +15,7 @@ body {
 	position: sticky;
 	z-index: 1;
 	display: flex;
+	gap: 10px;
 }
 
 .birds-eye-view_note-grid {
@@ -21,13 +23,16 @@ body {
 	flex-direction: row;
 	gap: 1em;
 	flex-wrap: wrap;
+	width: 100%;
 
-	padding: 1em;
+	height: 100%;
+
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 }
 
 .birds-eye-view_note-container {
-	width: 200px;
-	height: 200px;
+	height: 150px;
 
 	overflow-y: hidden;
 	overflow-x: hidden;
@@ -36,7 +41,8 @@ body {
 
 	border-radius: 0.2em;
 
-	border-top: 0.5em solid var(--background-primary-alt);
+	border-top: 0.5em solid var(--background-secondary-alt);
+	background: var(--background-secondary);
 
 	box-shadow: 0.1em 0.1em 0px rgba(128, 128, 128, 0.2);
 	transition: all ease 0.2;
@@ -47,8 +53,7 @@ body {
 
 .birds-eye-view_note-container .birds-eye-view_note-title {
 	font-weight: bold;
-	border-bottom: 1px solid;
-	margin-bottom: 0.5em;
+	margin-bottom: 0.6em;
 }
 
 .birds-eye-view_note-container img {
@@ -69,20 +74,21 @@ body {
 	left: 0;
 }
 
-.birds-eye-view_note > div {
+.bires-eye-view_note-content {
 	overflow: hidden;
 	margin-bottom: 0.5em;
+	color: var(--text-muted);
 }
 
 .birds-eye-view_note-band {
 	position: absolute;
 	top: 0px;
 
-	opacity: 0.5;
+	opacity: 0.3;
 	content: "";
 	height: 100%;
 	width: 100%;
-	background: var(--background-primary);
+	background: var(--background-secondary);
 }
 
 .birds-eye-view_note-container:hover {
@@ -95,6 +101,9 @@ body {
 
 .birds-eye-view_control-container > button {
 	width: auto;
+	font-weight: bold;
+	border: 1px solid var(--background-primary);
+	color: var(--text-muted);
 }
 
 /* Note内ContentStyle */

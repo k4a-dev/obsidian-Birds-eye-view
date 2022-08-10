@@ -115,7 +115,7 @@ const BirdsEyePage: React.FC<
 	};
 
 	return (
-		<>
+		<div className="birds-eye-view">
 			<div className="birds-eye-view_control-container">
 				<Select
 					styles={customStyles}
@@ -140,13 +140,13 @@ const BirdsEyePage: React.FC<
 				</button>
 			</div>
 			<div className="birds-eye-view_notes-container">
-				<p>number of notes : {p.notes.length}</p>
+				{/* <p>Notes : {p.notes.length}</p> */}
 				<NoteTile
 					notes={p.notes.sort((a, b) => sortFunc(a, b, sortOrder))}
 					dispatchOpen={p.dispatchOpen}
 				/>
 			</div>
-		</>
+		</div>
 	);
 };
 

@@ -35,11 +35,9 @@ const renderContent = (content: string) => {
 	const root = proceseer.parse(content);
 
 	return content
-		? content
-				.split(/\n/)
-				.slice(0, 20)
-				.map((line, i) => <RenderLine key={i} content={line} />)
-		: "Loading...";
+		.split(/\n/)
+		.slice(0, 20)
+		.map((line, i) => <RenderLine key={i} content={line} />);
 };
 
 const renderExternalSumbNail = (title: string, content: string) => {
@@ -65,7 +63,7 @@ const renderSumbNail = (
 };
 
 const NoteContent: React.FC<NoteType> = (p) => {
-	const [content, setContent] = useState("");
+	const [content, setContent] = useState<string | null>(null);
 
 	useEffect(() => {
 		p.getContent().then((content) => setContent(content));
@@ -73,13 +71,15 @@ const NoteContent: React.FC<NoteType> = (p) => {
 
 	return (
 		<>
-			{content !== ""
+			{content !== null
 				? renderSumbNail(p.sumbNailPath, p.title, content)
 				: null}
 			<div className="birds-eye-view_note-band"></div>
 			<div className="birds-eye-view_note">
 				<p className="birds-eye-view_note-title">{p.title}</p>
-				<div>{renderContent(content)}</div>
+				<div className="bires-eye-view_note-content">
+					{content === null ? "Loading..." : renderContent(content)}
+				</div>
 			</div>
 		</>
 	);
