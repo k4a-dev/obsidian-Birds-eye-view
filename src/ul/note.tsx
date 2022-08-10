@@ -41,16 +41,22 @@ const renderContent = (content: string) => {
 };
 
 const renderExternalSumbNail = (title: string, content: string) => {
+	const sumbNail = getExternalSumbNail(content);
+	if (sumbNail) return <img src={sumbNail} alt={title} />;
+	return <></>;
+};
+
+const getExternalSumbNail = (content: string): string | undefined => {
 	const lines = content.split("\n");
 	for (let lineNum = 0; lineNum < Math.min(100, lines.length); lineNum++) {
 		const line = lines[lineNum];
 		const match = line.match(/^!\[.*\]\((.+)\)/);
 		if (match && match[1]) {
-			return <img src={match[1]} alt={title} />;
+			return match[1];
 		}
 	}
 
-	return <></>;
+	return undefined;
 };
 
 const renderSumbNail = (
@@ -64,22 +70,41 @@ const renderSumbNail = (
 
 const NoteContent: React.FC<NoteType> = (p) => {
 	const [content, setContent] = useState<string | null>(null);
+	const [sumbNail, setSumbNail] = useState<undefined | string>(
+		p.sumbNailPath
+	);
 
 	useEffect(() => {
-		p.getContent().then((content) => setContent(content));
+		p.getContent().then((content) => {
+			setContent(content);
+			if (!sumbNail) setSumbNail(getExternalSumbNail(content));
+		});
 	}, []);
 
 	return (
 		<>
-			{content !== null
+			{/* {content !== null
 				? renderSumbNail(p.sumbNailPath, p.title, content)
-				: null}
-			<div className="birds-eye-view_note-band"></div>
+				: null} */}
+			{/* <div className="birds-eye-view_note-band"></div> */}
 			<div className="birds-eye-view_note">
 				<p className="birds-eye-view_note-title">{p.title}</p>
-				<div className="bires-eye-view_note-content">
-					{content === null ? "Loading..." : renderContent(content)}
-				</div>
+
+				{sumbNail ? (
+					<div className="birds-eye-view_note-sumbnail-container"> 
+						<img
+							className="birds-eye-view_note-sumbnail"
+							src={sumbNail}
+							alt={p.title}
+						/>
+					</div>
+				) : (
+					<div className="birds-eye-view_note-content">
+						{content === null
+							? "Loading..."
+							: renderContent(content)}
+					</div>
+				)}
 			</div>
 		</>
 	);

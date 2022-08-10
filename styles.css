@@ -51,21 +51,9 @@ div[data-type="birds-eye-view"] .view-content {
 	position: relative;
 }
 
-.birds-eye-view_note-container .birds-eye-view_note-title {
-	font-weight: bold;
-	margin-bottom: 0.6em;
-}
-
-.birds-eye-view_note-container img {
-	width: 100%;
-	height: auto;
-	max-height: 100%;
-	object-fit: contain;
-	top: 0;
-	left: 0;
-}
-
 .birds-eye-view_note {
+	display: flex;
+	flex-direction: column;
 	position: absolute;
 	padding: 0.5em;
 	width: 100%;
@@ -74,9 +62,24 @@ div[data-type="birds-eye-view"] .view-content {
 	left: 0;
 }
 
-.bires-eye-view_note-content {
+.birds-eye-view_note-container .birds-eye-view_note-title {
+	font-weight: bold;
+	margin-bottom: 0.6em;
+}
+
+.birds-eye-view_note-sumbnail-container {
+	flex: 1;
+	min-height: 0;
+}
+
+.birds-eye-view_note-sumbnail {
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+}
+
+.birds-eye-view_note-content {
 	overflow: hidden;
-	margin-bottom: 0.5em;
 	color: var(--text-muted);
 }
 
