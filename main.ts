@@ -53,12 +53,16 @@ export default class BirdsEyeViewPlugin extends Plugin {
 			},
 		});
 
-		this.initLeaf();
-
 		addIcon("birdseye", birdseyeIcon);
-		this.addRibbonIcon("birdseye", "Open bird's eye view", () =>
-			this.initLeaf()
-		);
+		this.addRibbonIcon("birdseye", "Open bird's eye view", () => {
+			const leaves =
+				this.app.workspace.getLeavesOfType(BIRDS_EYE_VIEW_TYPE);
+
+			if (leaves.length) this.closeLeaf();
+			else this.initLeaf();
+		});
+
+		this.initLeaf();
 	}
 
 	onunload() {
@@ -91,6 +95,14 @@ export default class BirdsEyeViewPlugin extends Plugin {
 			});
 	}
 
+	closeLeaf() {
+		const leaves = this.app.workspace.getLeavesOfType(BIRDS_EYE_VIEW_TYPE);
+
+		leaves.map((leaf) => {
+			leaf.detach();
+		});
+	}
+
 	updateViewSettings = async () => {
 		const views = this.app.workspace.getLeavesOfType(BIRDS_EYE_VIEW_TYPE);
 		views.forEach((leaf) => {
@@ -100,7 +112,7 @@ export default class BirdsEyeViewPlugin extends Plugin {
 	};
 
 	injectView = async () => {
-		console.log('inject view')
+		console.log("inject view");
 		const views = this.app.workspace.getLeavesOfType(BIRDS_EYE_VIEW_TYPE);
 		if (views.length == 0) return;
 
